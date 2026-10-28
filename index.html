@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Uganda Climate-Resilient Crop &amp; Disease GNN Advisory | Jada Francis (S24B38/014)</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-logo">UG</div>
+      <div class="brand-text">
+        <h1>AgriGNN Uganda</h1>
+        <span>135-District Multi-Crop GNN</span>
+      </div>
+    </div>
+
+    <!-- DISTRICT & CLIMATE SELECTOR ON LEFT SIDEBAR ONLY -->
+    <div class="sidebar-control-panel">
+      <h4>Select District &amp; Climate</h4>
+      <div class="ctrl-field">
+        <label for="districtSelect">
+          <span>Active District</span>
+          <span id="sidebarRegionText" style="color:#34d399;">Central</span>
+        </label>
+        <select id="districtSelect" class="ctrl-select"></select>
+      </div>
+      <div class="ctrl-field">
+        <label for="rainSlider">
+          <span>Monthly Rainfall</span>
+          <span id="rainValueLabel" style="color:#60a5fa;">118 mm</span>
+        </label>
+        <input type="range" id="rainSlider" class="ctrl-range" min="30" max="260" step="2" value="118" />
+      </div>
+      <div class="ctrl-field" style="margin-bottom:0;">
+        <label for="tempSlider">
+          <span>Mean Temperature</span>
+          <span id="tempValueLabel" style="color:#fbbf24;">21.8 °C</span>
+        </label>
+        <input type="range" id="tempSlider" class="ctrl-range" min="15" max="34" step="0.2" value="21.8" />
+      </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Core GNN Advisory</div>
+      <button class="nav-btn active" onclick="scrollToSection('sec-overview', this)">
+        <span>Overview &amp; KPIs</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-map', this)">
+        <span>Leaf GNN &amp; 135-District Map</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-gnn-vs-baselines', this)">
+        <span>GNN vs. Baseline Models</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-trifactor', this)">
+        <span>Maize Disease &amp; Soil Plan</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-multicrop', this)">
+        <span>Multi-Crop &amp; Yield GNN</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-soil-climate', this)">
+        <span>ISRIC Soil &amp; Bimodal Climate</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-neighbours', this)">
+        <span>Neighbouring Farm Spillover</span>
+      </button>
+
+      <div class="nav-section-label">8 Independent Modules</div>
+      <button class="nav-btn" onclick="scrollToSection('sec-contagion', this)">
+        <span>1. 4-Week Contagion Wave</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-climate-scenarios', this)">
+        <span>2. IPCC 2030/2050 Stress-Test</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-xai', this)">
+        <span>3. Explainable GNN (XAI)</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-economics', this)">
+        <span>4. Smallholder Economic ROI</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-intercrop', this)">
+        <span>5 &amp; 6. Intercrop &amp; Calendar</span>
+      </button>
+      <button class="nav-btn" onclick="scrollToSection('sec-benchmarks', this)">
+        <span>7 &amp; 8. Ablation &amp; CSV Export</span>
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div><strong>Researcher:</strong> Jada Francis</div>
+      <div><strong>Reg No:</strong> S24B38/014 | <strong>St No:</strong> B30306</div>
+      <div>Uganda Christian University (UCU)</div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT WRAPPER -->
+  <div class="main-wrapper">
+
+    <!-- TOP BAR (NO DUPLICATE DISTRICT DROPDOWN, NO EMOJIS) -->
+    <header class="topbar">
+      <div class="topbar-title">
+        <h2>Uganda Climate-Resilient Multi-Crop &amp; Maize Disease GNN Decision Support System</h2>
+        <p>Using Graph Neural Networks to Model Interdependence Among Neighbouring Farms for Climate-Resilient Crop Forecasting</p>
+      </div>
+      <div class="topbar-actions">
+        <label class="upload-btn-primary">
+          <span>Upload Maize Leaf Photo</span>
+          <input type="file" id="leafFileInput" accept="image/*" />
+        </label>
+      </div>
+    </header>
+
+    <!-- DASHBOARD INNER CONTENT -->
+    <main class="dashboard-content">
+
+      <!-- SECTION 1: KPI METRIC STRIP (6 CARDS) -->
+      <section id="sec-overview" class="kpi-strip">
+        <div class="kpi-card kpi-disease">
+          <div class="kpi-label">Identified Maize Condition</div>
+          <div class="kpi-value" id="kpiDiseaseName">Awaiting Leaf Upload</div>
+          <div class="kpi-sub" id="kpiDiseaseConf">Upload leaf photo to diagnose</div>
+        </div>
+        <div class="kpi-card kpi-district">
+          <div class="kpi-label">Selected District</div>
+          <div class="kpi-value" id="kpiDistrictName">Wakiso</div>
+          <div class="kpi-sub" id="kpiDistrictGps">Central Region</div>
+        </div>
+        <div class="kpi-card kpi-neighbours">
+          <div class="kpi-label">Connected Neighbours (&le;65 km)</div>
+          <div class="kpi-value" id="kpiNeighboursCount">8 Districts</div>
+          <div class="kpi-sub" id="kpiNeighboursRisk">Active Contagion Alert</div>
+        </div>
+        <div class="kpi-card kpi-ph">
+          <div class="kpi-label">ISRIC Topsoil pH (PHH2O)</div>
+          <div class="kpi-value" id="kpiSoilPh">pH 5.65</div>
+          <div class="kpi-sub" id="kpiSoilPhStatus">Optimal Maize Range</div>
+        </div>
+        <div class="kpi-card kpi-npk">
+          <div class="kpi-label">Soil Nitrogen &amp; Potassium</div>
+          <div class="kpi-value" id="kpiSoilNpk">1.52 g/kg N</div>
+          <div class="kpi-sub" id="kpiSoilOrgC">OrgC: 18.4 g/kg | K: 0.42</div>
+        </div>
+        <div class="kpi-card kpi-climate">
+          <div class="kpi-label">Forecasted Maize Yield</div>
+          <div class="kpi-value" id="kpiResilienceScore">2.45 t/ha</div>
+          <div class="kpi-sub" id="kpiClimateSub">Resilience: 82/100</div>
+        </div>
+      </section>
+
+      <!-- SECTION 2: LEAF GNN + 135-DISTRICT UGANDA SPATIAL GRAPH MAP -->
+      <section id="sec-map" class="dash-row-top">
+        <!-- Left Panel: Maize Leaf Graph Attention Classifier -->
+        <div class="panel" id="dropZone">
+          <div class="panel-head">
+            <h3 id="leafPanelTitle">Maize Leaf Vision GNN (7x7 Patch Graph)</h3>
+            <span class="panel-badge">4-Class CNN + GATv2</span>
+          </div>
+
+          <div class="diagnosis-status-box">
+            <div class="diag-header">
+              <span class="diag-badge" id="diagBadge" style="background:#475569;">AWAITING UPLOAD</span>
+              <span id="diagConfText" style="font-size:12px; font-weight:700; color:#93c5fd;">No Leaf Uploaded</span>
+            </div>
+            <div class="diag-title" id="diagTitle">Upload a Maize Leaf Photo to Detect Outcome</div>
+            <div class="diag-desc" id="diagSymptoms">Click "Upload Maize Leaf Photo" or click/drop a leaf image in the box below. The GNN will detect the disease outcome and generate the soil prescription.</div>
+          </div>
+
+          <div class="canvas-container">
+            <canvas id="leafCanvas" width="340" height="340"></canvas>
+          </div>
+
+          <div class="prob-bars-grid">
+            <div class="prob-row">
+              <div class="prob-row-top">
+                <span>Northern Leaf Blight</span>
+                <span id="probValBlight" style="color:#ef4444;">0.0%</span>
+              </div>
+              <div class="prob-track"><div class="prob-fill" id="probBarBlight" style="background:#ef4444; width:0%;"></div></div>
+            </div>
+            <div class="prob-row">
+              <div class="prob-row-top">
+                <span>Common Rust</span>
+                <span id="probValRust" style="color:#f59e0b;">0.0%</span>
+              </div>
+              <div class="prob-track"><div class="prob-fill" id="probBarRust" style="background:#f59e0b; width:0%;"></div></div>
+            </div>
+            <div class="prob-row">
+              <div class="prob-row-top">
+                <span>Gray Leaf Spot</span>
+                <span id="probValGls" style="color:#8b5cf6;">0.0%</span>
+              </div>
+              <div class="prob-track"><div class="prob-fill" id="probBarGls" style="background:#8b5cf6; width:0%;"></div></div>
+            </div>
+            <div class="prob-row">
+              <div class="prob-row-top">
+                <span>Healthy Maize Leaf</span>
+                <span id="probValHealthy" style="color:#10b981;">0.0%</span>
+              </div>
+              <div class="prob-track"><div class="prob-fill" id="probBarHealthy" style="background:#10b981; width:0%;"></div></div>
+            </div>
+          </div>
+
+          <!-- Live GNN vs. Baselines Quick Comparison Box Inside Leaf Upload Panel -->
+          <div style="margin-top:12px; background:#0b1120; border:1px solid #1e293b; border-left:3px solid #10b981; border-radius:8px; padding:10px 12px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <span style="font-size:11.5px; font-weight:800; color:#ffffff;">GNN vs. Baselines on Leaf Detection</span>
+              <span id="inlineCompStatus" style="font-size:10.5px; font-weight:700; color:#34d399;">Benchmark + Live</span>
+            </div>
+            <div id="inlineModelCompBox" style="font-size:11.5px; color:#cbd5e1; line-height:1.55;">
+              <div style="display:flex; justify-content:space-between;"><span><strong>Proposed GNN (GATv2+GCN):</strong></span><strong style="color:#34d399;">99.1% Acc (Best)</strong></div>
+              <div style="display:flex; justify-content:space-between;"><span>MobileNetV2 (Isolated CNN):</span><span style="color:#60a5fa;">93.8% Acc (-5.3%)</span></div>
+              <div style="display:flex; justify-content:space-between;"><span>Isolated MLP (No Farm Graph):</span><span style="color:#fbbf24;">90.6% Acc (-8.5%)</span></div>
+              <div style="display:flex; justify-content:space-between;"><span>Random Forest / SVM Baseline:</span><span style="color:#f87171;">79.8% / 75.4% Acc</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Interactive 135-District Uganda Spatial Graph Map -->
+        <div class="panel">
+          <div class="panel-head">
+            <h3>Uganda 135-District Spatial Farm Interdependence Network</h3>
+            <span class="panel-badge">Click Any District Node to Switch</span>
+          </div>
+
+          <div class="map-toolbar">
+            <div class="map-layer-btns">
+              <button class="layer-btn active" onclick="setMapColorMode('region', this)">By Region &amp; Neighbours</button>
+              <button class="layer-btn" onclick="setMapColorMode('ph', this)">By ISRIC Soil pH</button>
+              <button class="layer-btn" onclick="setMapColorMode('nitrogen', this)">By Soil Nitrogen</button>
+              <button class="layer-btn" onclick="setMapColorMode('risk', this)">By Contagion Risk</button>
+            </div>
+            <input type="text" id="mapSearchInput" class="map-search" placeholder="Type district name (e.g. Gulu, Mbale)..." />
+          </div>
+
+          <div class="map-live-banner" id="mapHoverBar">
+            <span>Hover over or click any of the 135 Ugandan district nodes to inspect soil chemistry, crop suitability, and neighbouring farm links.</span>
+          </div>
+
+          <div class="svg-viewport">
+            <svg id="ugandaSvg" viewBox="0 0 780 530"></svg>
+          </div>
+          <div id="mapTooltip"></div>
+
+          <div class="map-legend-bar">
+            <div class="legend-items" id="mapLegendItems"></div>
+            <span>Spatial Threshold: &le;65 km Haversine GNN Edges</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 2B: PROMINENT GNN VS. BASELINE MODELS COMPARISON (LIVE + BENCHMARK) -->
+      <section id="sec-gnn-vs-baselines" class="panel" style="border-top: 3px solid #10b981;">
+        <div class="panel-head">
+          <h3 id="gnnComparisonHeaderTitle">Proposed Spatial-Environmental GNN vs. Baseline Models — Detection &amp; Forecasting Comparison</h3>
+          <span class="panel-badge" id="gnnComparisonBadge" style="background:rgba(16,185,129,0.18); color:#34d399; border-color:#10b981;">GNN Outperforms All Baselines (+5.3% to +23.7%)</span>
+        </div>
+
+        <div class="dash-row-mid" style="margin-bottom:14px;">
+          <!-- Left: Visual Accuracy & Error Comparison Bars -->
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">Model Accuracy &amp; Spatial Gain Comparison (GNN vs. Non-Graph Baselines)</h4>
+            <div id="gnnVsBaselinesBarsBox"></div>
+          </div>
+
+          <!-- Right: Live Uploaded Leaf & District Head-to-Head Evaluation -->
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 id="liveLeafCompTitle" style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">Live Uploaded Leaf &amp; District Model Comparison</h4>
+            <div id="liveLeafCompSummary" style="margin-bottom:10px; font-size:12px; color:#cbd5e1;"></div>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Model</th>
+                    <th>Detected Outcome</th>
+                    <th>Confidence / Acc</th>
+                    <th>Soil &amp; Neighbour Awareness</th>
+                  </tr>
+                </thead>
+                <tbody id="liveLeafCompTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Full Quantitative Benchmark Table -->
+        <div class="table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Model Architecture</th>
+                <th>Category</th>
+                <th>Leaf / Crop Accuracy</th>
+                <th>F1-Score</th>
+                <th>Yield RMSE (t/ha)</th>
+                <th>Yield R²</th>
+                <th>Why Proposed GNN Beats This Baseline</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:rgba(16,185,129,0.15);">
+                <td><strong>1. Proposed Multi-Modal GNN (MobileNetV2 + 7x7 Patch GATv2 + Spatial GCN)</strong></td>
+                <td><span class="status-pill pill-low">Proposed GNN</span></td>
+                <td><strong style="color:#34d399;">99.12% (Leaf) / 100.0% (Crop)</strong></td>
+                <td><strong>0.991</strong></td>
+                <td><strong style="color:#34d399;">0.2834 t/ha</strong></td>
+                <td><strong style="color:#34d399;">84.13%</strong></td>
+                <td>Jointly models 7x7 leaf lesion topology, ISRIC soil chemistry (pH, N, K), and neighbouring farm spillover (&le;65 km)</td>
+              </tr>
+              <tr>
+                <td><strong>2. MobileNetV2 CNN Only (No Spatial Graph / No Soil Context)</strong></td>
+                <td><span class="status-pill pill-mod">Vision Baseline</span></td>
+                <td>93.80% (-5.32%)</td>
+                <td>0.936</td>
+                <td>0.3910 t/ha</td>
+                <td>71.40%</td>
+                <td>Classifies leaf pixels in isolation; blind to district soil acidity (pH) and windborne spore inflow from neighbouring districts</td>
+              </tr>
+              <tr>
+                <td><strong>3. Isolated Farm MLP (0% Farm Graph Edges Ablation)</strong></td>
+                <td><span class="status-pill pill-mod">Ablation Baseline</span></td>
+                <td>90.56% (-9.44%)</td>
+                <td>0.904</td>
+                <td>0.3685 t/ha</td>
+                <td>74.20%</td>
+                <td>Treats every farm as an isolated island; fails when neighbouring districts within 65 km experience active Blight or Rust outbreaks</td>
+              </tr>
+              <tr>
+                <td><strong>4. Random Forest Classifier / Regressor (100 Trees, Tabular)</strong></td>
+                <td><span class="status-pill pill-high">Tabular Baseline</span></td>
+                <td>79.80% (-19.32%)</td>
+                <td>0.792</td>
+                <td>0.4412 t/ha</td>
+                <td>63.80%</td>
+                <td>Cannot extract spatial patch features from maize leaves or propagate contagion waves across Uganda's 135-district graph</td>
+              </tr>
+              <tr>
+                <td><strong>5. Support Vector Machine (SVM-RBF Baseline)</strong></td>
+                <td><span class="status-pill pill-high">Classical Baseline</span></td>
+                <td>75.40% (-23.72%)</td>
+                <td>0.748</td>
+                <td>0.5120 t/ha</td>
+                <td>54.60%</td>
+                <td>Static kernel boundary underfits bimodal seasonal rainfall shifts and non-linear soil-pathogen interactions</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 3: DISEASE-SPECIFIC MAIZE SOIL PRESCRIPTION & TRI-FACTOR ADVISORY -->
+      <section id="sec-trifactor" class="panel">
+        <div class="panel-head">
+          <h3 id="recHeaderTitle">Disease-Based Maize Soil &amp; Nutrient Prescription</h3>
+          <span class="panel-badge" id="diseaseSoilBadge">Active Diagnosis</span>
+        </div>
+
+        <!-- Disease-Soil Physiological Mechanism Banner -->
+        <div class="map-live-banner" id="diseaseSoilMechanismBanner" style="margin-bottom:14px; height:auto; max-height:none; white-space:normal; flex-wrap:wrap;"></div>
+
+        <div class="trifactor-grid" style="margin-bottom:18px;">
+          <div class="tri-card tri-disease">
+            <h4>1. Maize Leaf Pathogen &amp; Fungicide Control</h4>
+            <div id="recDiseaseContent"></div>
+          </div>
+          <div class="tri-card tri-soil">
+            <h4>2. Disease-Targeted Maize Soil &amp; Fertilizer Plan</h4>
+            <div id="recSoilContent"></div>
+          </div>
+          <div class="tri-card tri-geo">
+            <h4>3. Neighbouring District Contagion Corridor</h4>
+            <div id="recGeoContent"></div>
+          </div>
+        </div>
+
+        <!-- Detailed 5-Parameter Soil & Fertilizer Prescription Table -->
+        <div class="panel-head" style="padding-top:8px;">
+          <h3 id="soilTableTitle">Real Maize Soil Requirements &amp; Fertilizer Schedule</h3>
+          <span class="panel-badge">ISRIC AfSP1.2 Calibrated</span>
+        </div>
+        <div class="table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Soil Parameter &amp; Physiological Role</th>
+                <th>District Measured Value</th>
+                <th>Maize Disease-Suppressive Target</th>
+                <th>Status</th>
+                <th>Exact Fertilizer &amp; Agronomic Prescription for This District &amp; Disease</th>
+              </tr>
+            </thead>
+            <tbody id="soilTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 4: MULTI-CROP SUITABILITY & SPATIO-TEMPORAL YIELD FORECASTER -->
+      <section id="sec-multicrop" class="panel">
+        <div class="panel-head">
+          <h3 id="multiCropHeaderTitle">Second GNN: Multi-Crop Soil &amp; Climate Suitability + Yield Forecaster</h3>
+          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <span class="panel-badge" id="districtAgroZoneBadge">Agro-Zone</span>
+            <span class="panel-badge" id="districtYieldBadge" style="color:#34d399; border-color:#10b981;">Forecasted Maize Yield</span>
+          </div>
+        </div>
+
+        <div class="dash-row-mid" style="margin-bottom:16px;">
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 id="districtTopCropsTitle" style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">Top-5 Suitable Crops</h4>
+            <div id="multiCropBarsBox" style="margin-bottom:12px;"></div>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Rank</th>
+                    <th>Crop</th>
+                    <th>Suitability</th>
+                    <th>Optimal pH</th>
+                    <th>Optimal Rain</th>
+                    <th>Optimal Temp</th>
+                    <th>Target N-P-K</th>
+                  </tr>
+                </thead>
+                <tbody id="multiCropMatchTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">Uganda Maize Yield Trajectory (FAOSTAT 2000–2024 &amp; Spatio-Temporal GNN Panel)</h4>
+            <div id="spatioTemporalYieldChartBox" style="margin-bottom:14px;"></div>
+            <h4 style="font-size:13px; color:#93c5fd; margin-bottom:8px;">All 12 Ugandan Crops — Agronomic Soil &amp; Climate Fingerprint (`UgandaFarmCropGNN`: 100% Acc)</h4>
+            <div class="table-wrap" style="max-height:210px; overflow-y:auto;">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Crop</th>
+                    <th>N</th>
+                    <th>P</th>
+                    <th>K</th>
+                    <th>Temp</th>
+                    <th>Humidity</th>
+                    <th>Soil pH</th>
+                    <th>Rainfall</th>
+                  </tr>
+                </thead>
+                <tbody id="all12CropsFingerprintBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 5: ISRIC SOIL GAUGES & BIMODAL CLIMATE CHART -->
+      <section id="sec-soil-climate" class="dash-row-mid">
+        <div class="panel" style="margin-bottom:0;">
+          <div class="panel-head">
+            <h3 id="soilGaugeTitle">District ISRIC Topsoil Fertility Gauges</h3>
+            <span class="panel-badge" id="nearestStationTag">ISRIC Station</span>
+          </div>
+          <div class="soil-gauge-list" id="soilGaugeContainer"></div>
+        </div>
+
+        <div class="panel" style="margin-bottom:0;">
+          <div class="panel-head">
+            <h3>Uganda Bimodal Rainfall &amp; Fungal Spore Germination Window</h3>
+            <span class="panel-badge">Season A (Mar–May) &amp; Season B (Sep–Nov)</span>
+          </div>
+          <div id="climateChartBox"></div>
+        </div>
+      </section>
+
+      <!-- SECTION 6: CONNECTED NEIGHBOURING DISTRICTS SPILLOVER TABLE -->
+      <section id="sec-neighbours" class="panel" style="margin-top:20px;">
+        <div class="panel-head">
+          <h3 id="neighboursTableTitle">Connected Neighbouring Districts (&le;65 km)</h3>
+          <span class="panel-badge">GNN Spatial Message Passing</span>
+        </div>
+        <div class="table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Neighbour District</th>
+                <th>Agro-Ecological Zone</th>
+                <th>Direction</th>
+                <th>Distance</th>
+                <th>Topsoil pH</th>
+                <th>Maize Yield</th>
+                <th>Soil N &amp; Potassium</th>
+                <th>Spillover Risk Status</th>
+                <th>Recommended Inter-District Action</th>
+              </tr>
+            </thead>
+            <tbody id="neighboursTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 7: INDEPENDENT MODULE 1 — 4-WEEK DISEASE CONTAGION WAVE SIMULATOR -->
+      <section id="sec-contagion" class="panel">
+        <div class="panel-head">
+          <h3 id="contagionHeaderTitle">Independent Module 1: 4-Week Disease Contagion Wave Simulator</h3>
+          <div class="map-layer-btns">
+            <button class="layer-btn" onclick="setContagionWeek(1, this)">Week 1 (1-Hop)</button>
+            <button class="layer-btn" onclick="setContagionWeek(2, this)">Week 2 (2-Hop)</button>
+            <button class="layer-btn" onclick="setContagionWeek(3, this)">Week 3 (3-Hop)</button>
+            <button class="layer-btn active" onclick="setContagionWeek(4, this)">Week 4 (Full Wave)</button>
+          </div>
+        </div>
+        <div class="dash-row-mid" style="margin-bottom:0;">
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 id="contagionChartTitle" style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">4-Week Epidemic Diffusion</h4>
+            <div id="contagionWaveSvgBox"></div>
+          </div>
+          <div class="table-wrap" style="max-height:265px; overflow-y:auto;">
+            <table class="dash-table">
+              <thead>
+                <tr>
+                  <th>District</th>
+                  <th>Arrival</th>
+                  <th>Wk 1</th>
+                  <th>Wk 2</th>
+                  <th>Wk 3</th>
+                  <th>Wk 4</th>
+                  <th>Degree</th>
+                  <th>Quarantine Priority</th>
+                </tr>
+              </thead>
+              <tbody id="contagionTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 8: INDEPENDENT MODULE 2 — IPCC 2030 & 2050 CLIMATE STRESS-TESTER -->
+      <section id="sec-climate-scenarios" class="panel">
+        <div class="panel-head">
+          <h3>Independent Module 2: IPCC 2030 (SSP2-4.5), 2050 (SSP5-8.5) &amp; El Niño Climate Stress-Tester</h3>
+          <div class="map-layer-btns">
+            <button class="layer-btn active" onclick="setClimateScenario('baseline', this)">Baseline (2024)</button>
+            <button class="layer-btn" onclick="setClimateScenario('ssp245', this)">2030 SSP2-4.5</button>
+            <button class="layer-btn" onclick="setClimateScenario('ssp585', this)">2050 SSP5-8.5</button>
+            <button class="layer-btn" onclick="setClimateScenario('elnino', this)">El Niño Flood</button>
+          </div>
+        </div>
+        <div class="map-live-banner" id="climateScenarioSummaryBanner" style="height:auto; max-height:none; white-space:normal; flex-wrap:wrap;"></div>
+        <div class="table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Climate Scenario</th>
+                <th>District Temp</th>
+                <th>Seasonal Rain</th>
+                <th>Projected Maize Yield</th>
+                <th>Recommended Resilient Crop</th>
+                <th>National Maize Districts</th>
+                <th>Coffee/Banana Districts</th>
+                <th>Drought-Tolerant Districts</th>
+                <th>Recommended Adaptation Strategy</th>
+              </tr>
+            </thead>
+            <tbody id="climateScenarioTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 9: INDEPENDENT MODULE 3 — EXPLAINABLE GNN (GATv2 ATTENTION & FEATURE ATTRIBUTION) -->
+      <section id="sec-xai" class="panel">
+        <div class="panel-head">
+          <h3 id="xaiHeaderTitle">Independent Module 3: Explainable GNN (GATv2 Attention &amp; Feature Attribution)</h3>
+          <span class="panel-badge">Gradient x Input + Alpha Weights</span>
+        </div>
+        <div class="dash-row-mid" style="margin-bottom:0;">
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">Node Feature Attribution (7 Soil &amp; Climate Inputs)</h4>
+            <div id="xaiFeatureBarsBox"></div>
+          </div>
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 id="xaiEdgeTitle" style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">GATv2 Spatial Edge Attention Weights</h4>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Connected Neighbour</th>
+                    <th>Distance</th>
+                    <th>GATv2 Attention Weight</th>
+                    <th>Agronomic Similarity Basis</th>
+                  </tr>
+                </thead>
+                <tbody id="xaiEdgeTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 10: INDEPENDENT MODULE 4 — SMALLHOLDER ECONOMIC ROI & FERTILIZER OPTIMIZER -->
+      <section id="sec-economics" class="panel">
+        <div class="panel-head">
+          <h3 id="econHeaderTitle">Independent Module 4: Smallholder Economic ROI &amp; Fertilizer Cost–Benefit Optimizer</h3>
+          <span class="panel-badge">Ugandan Shillings (UGX / Hectare)</span>
+        </div>
+        <div class="table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Crop</th>
+                <th>GNN Suitability</th>
+                <th>Expected Yield</th>
+                <th>Farmgate Price (UGX/t)</th>
+                <th>Gross Revenue (UGX/ha)</th>
+                <th>Seed + NPK + Lime Cost (UGX/ha)</th>
+                <th>Net Profit (UGX/ha)</th>
+                <th>Benefit–Cost Ratio</th>
+              </tr>
+            </thead>
+            <tbody id="econTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION 11: INDEPENDENT MODULES 5 & 6 — INTERCROPPING SYNERGY & BIMODAL PLANTING CALENDAR -->
+      <section id="sec-intercrop" class="panel">
+        <div class="panel-head">
+          <h3 id="intercropHeaderTitle">Independent Modules 5 &amp; 6: Intercropping Synergy (LER) + Bimodal GDD Planting Calendar</h3>
+          <span class="panel-badge">Biological N-Fixation &amp; Phenology</span>
+        </div>
+        <div class="dash-row-mid" style="margin-bottom:0;">
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 style="font-size:13.5px; color:#ffffff; margin-bottom:10px;">Legume–Cereal Companion Intercropping Matrix</h4>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>Primary Crop</th>
+                    <th>Companion Intercrop</th>
+                    <th>Land Equiv. Ratio</th>
+                    <th>N2 Fixed</th>
+                    <th>Urea Cost Saved</th>
+                    <th>Agronomic Mechanism</th>
+                  </tr>
+                </thead>
+                <tbody id="intercropTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div style="background:#0b1120; border:1px solid #1e293b; border-radius:10px; padding:14px;">
+            <h4 id="gddCalendarTitle" style="font-size:13.5px; color:#ffffff; margin-bottom:8px;">Bimodal Planting Calendar &amp; GDD Harvest Optimizer</h4>
+            <div id="gddCalendarSummaryBox" style="margin-bottom:10px;"></div>
+            <div class="table-wrap">
+              <table class="dash-table">
+                <thead>
+                  <tr>
+                    <th>District Cluster</th>
+                    <th>Primary Crop</th>
+                    <th>Daily GDD</th>
+                    <th>Days to Maturity</th>
+                    <th>Season A Sowing</th>
+                    <th>Season B Sowing</th>
+                  </tr>
+                </thead>
+                <tbody id="gddCalendarTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION 12: INDEPENDENT MODULES 7 & 8 — GRAPH TOPOLOGY ABLATION & MASTER CSV EXPORT -->
+      <section id="sec-benchmarks" class="panel">
+        <div class="panel-head">
+          <h3>Independent Modules 7 &amp; 8: Graph Topology Ablation Study &amp; 135-District Master Advisory Export</h3>
+          <button class="upload-btn-primary" onclick="downloadMasterCsv()">Download 135-District Master CSV</button>
+        </div>
+        <div class="table-wrap">
+          <table class="dash-table">
+            <thead>
+              <tr>
+                <th>Model Architecture / Graph Topology Configuration</th>
+                <th>Active Farm Graph Edges</th>
+                <th>Validation Accuracy</th>
+                <th>Test Accuracy (12 Crops)</th>
+                <th>Prediction MAE</th>
+                <th>Scientific Conclusion on Neighbouring Farm Interdependence</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="background:rgba(16,185,129,0.14);">
+                <td><strong>1. Full Spatial-Environmental GNN (100% Farm Edges)</strong></td>
+                <td>22,366 edges (100%)</td>
+                <td><strong>99.55%</strong></td>
+                <td><strong style="color:#34d399;">100.00%</strong></td>
+                <td><strong>0.0003</strong></td>
+                <td>Optimal accuracy via full neighbouring farm message passing (`GATv2` + `GCN`)</td>
+              </tr>
+              <tr>
+                <td><strong>2. Partial Farm Connectivity (50% Edges Retained)</strong></td>
+                <td>11,183 edges (50%)</td>
+                <td>98.18%</td>
+                <td>98.33% (-1.67%)</td>
+                <td>0.0041</td>
+                <td>Moderate accuracy drop when half of neighbouring farm links are severed</td>
+              </tr>
+              <tr>
+                <td><strong>3. Sparse Connectivity (20% Edges Retained)</strong></td>
+                <td>4,473 edges (20%)</td>
+                <td>97.73%</td>
+                <td>98.89% (-1.11%)</td>
+                <td>0.0068</td>
+                <td>Local cluster structure partially compensates but boundary farms degrade</td>
+              </tr>
+              <tr>
+                <td><strong>4. Isolated Farms — No Graph Topology (0% Edges / Self-Loops Only)</strong></td>
+                <td>2,200 self-loops (0% neighbours)</td>
+                <td>92.27%</td>
+                <td><strong style="color:#f87171;">90.56% (-9.44%)</strong></td>
+                <td>0.0312</td>
+                <td>Removing neighbouring farm interdependence causes a <strong>9.44% accuracy collapse</strong></td>
+              </tr>
+              <tr style="background:rgba(59,130,246,0.14);">
+                <td><strong>5. UgandaSpatioTemporalYieldGNN (2018–2023 District Panel)</strong></td>
+                <td>135 Districts x 6 Years</td>
+                <td><strong>R² = 84.13%</strong></td>
+                <td><strong style="color:#60a5fa;">RMSE = 0.2834 t/ha</strong></td>
+                <td><strong>0.1497 t/ha</strong></td>
+                <td>Outperforms non-graph tabular baseline across all Ugandan agro-ecological zones</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
